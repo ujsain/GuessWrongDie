@@ -4,6 +4,9 @@
 	delegates the visual to MuzzleFlash + Bullet.
 	mode: "straight" | "deflected" | "collide"
 	Sub-modules: Config, MuzzleAim, MuzzleFlash, Bullet.
+
+	Flash emits from MuzzleTip (origin); the bullet emits from BulletOrigin
+	(bulletOrigin) so they can be aimed/positioned independently.
 ]]
 local DuelEffectUtils = require(script.Parent:WaitForChild("DuelEffectUtils"))
 local EventHub        = require(game:GetService("ReplicatedStorage"):WaitForChild("EventHub"))
@@ -22,7 +25,7 @@ function ShootAction.perform(character, chairSystem, side, onFireMoment, mode)
 	end)
 
 	local function fireNow()
-		local pistol, muzzleTip, origin, axis = MuzzleAim.get(chairSystem, side)
+		local pistol, muzzleTip, origin, axis, bulletOrigin = MuzzleAim.get(chairSystem, side)
 		if muzzleTip then
 			MuzzleFlash.fire(muzzleTip, origin, axis)
 
@@ -31,23 +34,23 @@ function ShootAction.perform(character, chairSystem, side, onFireMoment, mode)
 
 			if mode == "deflected" then
 				-- slug flies out, bounces, returns; HP/flash land on return impact
-				Bullet.fireDeflected(origin, axis, character, onFireMoment)
+				Bullet.fireDeflected(bulletOrigin, axis, character, onFireMoment)
 				return
 			elseif mode == "collide" then
 				-- both shot: find the opponent muzzle, meet just shy of center, drop
 				local oppSide = (side == "Left") and "Right" or "Left"
-				local _, oppMuzzle, oppOrigin = MuzzleAim.get(chairSystem, oppSide)
+				local _, oppMuzzle, _, _, oppBulletOrigin = MuzzleAim.get(chairSystem, oppSide)
 				local meetingPos
-				if oppMuzzle and oppOrigin then
-					meetingPos = origin:Lerp(oppOrigin, Config.COLLIDE_MEET_FRACTION)
+				if oppMuzzle and oppBulletOrigin then
+					meetingPos = bulletOrigin:Lerp(oppBulletOrigin, Config.COLLIDE_MEET_FRACTION)
 				else
-					meetingPos = origin + axis * Config.DEFLECT_FORWARD_DISTANCE
+					meetingPos = bulletOrigin + axis * Config.DEFLECT_FORWARD_DISTANCE
 				end
-				Bullet.fireColliding(origin, meetingPos, onFireMoment)
+				Bullet.fireColliding(bulletOrigin, meetingPos, onFireMoment)
 				return
 			end
 
-			Bullet.fireStraight(origin, axis, character, pistol)
+			Bullet.fireStraight(bulletOrigin, axis, character, pistol)
 		end
 		-- straight shot (or no muzzle found): apply damage at the fire moment
 		if onFireMoment then onFireMoment() end

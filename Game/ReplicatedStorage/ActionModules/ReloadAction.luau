@@ -13,7 +13,7 @@ function ReloadAction.perform(character, chairSystem, side)
 
 	-- The gun part we emit the sound from (falls back to the character).
 	local pistol = chairSystem:FindFirstChild(side .. "Pistol")
-	local gunPart = pistol and pistol:FindFirstChild("Main")
+	local gunPart = pistol and DuelEffectUtils.getPart(pistol, "Main")
 
 	local track = DuelEffectUtils.playAnimation(character, RELOAD_ANIM_ID, "ReloadAction", function()
 		DuelEffectUtils.teardownGun(gunInfo)

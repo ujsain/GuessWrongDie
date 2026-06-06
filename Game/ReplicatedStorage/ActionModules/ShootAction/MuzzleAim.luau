@@ -1,16 +1,19 @@
 -- Muzzle origin + outward, horizontally-flattened barrel axis.
--- Shared by the flash and the bullet so they emit from the same point.
+-- Flash emits from MuzzleTip; the bullet emits from BulletOrigin (if present)
+-- so the two can be positioned independently.
 local MuzzleAim = {}
+
+local DuelEffectUtils = require(script.Parent.Parent:WaitForChild("DuelEffectUtils"))
 
 function MuzzleAim.get(chairSystem, side)
 	local pistol = chairSystem:FindFirstChild(side .. "Pistol")
 	if not pistol then return nil end
 
-	local muzzleTip = pistol:FindFirstChild("MuzzleTip")
+	local muzzleTip = DuelEffectUtils.getPart(pistol, "MuzzleTip")
 	if not muzzleTip then return nil end
 
 	local axis = muzzleTip.CFrame.ZVector
-	local mainPart = pistol:FindFirstChild("Main")
+	local mainPart = DuelEffectUtils.getPart(pistol, "Main")
 	if mainPart and (muzzleTip.Position - mainPart.Position):Dot(axis) < 0 then
 		axis = -axis
 	end
@@ -21,7 +24,13 @@ function MuzzleAim.get(chairSystem, side)
 		axis = flat.Unit
 	end
 
-	return pistol, muzzleTip, muzzleTip.Position, axis
+	-- Bullet starts from its own anchor if present (decoupled from the flash),
+	-- otherwise falls back to the muzzle tip.
+	local bulletPart = DuelEffectUtils.getPart(pistol, "BulletOrigin")
+	local bulletOrigin = bulletPart and bulletPart.Position or muzzleTip.Position
+
+	-- returns: pistol, muzzleTip, flashOrigin, axis, bulletOrigin
+	return pistol, muzzleTip, muzzleTip.Position, axis, bulletOrigin
 end
 
 return MuzzleAim

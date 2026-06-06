@@ -1,12 +1,24 @@
 local DuelEffectUtils = {}
 
+-- Resolve a named child on a pistol, supporting an optional "Dependencies"
+-- folder. Falls back to the pistol itself so guns without the folder still work.
+function DuelEffectUtils.getPart(pistol, name)
+	if not pistol then return nil end
+	local deps = pistol:FindFirstChild("Dependencies")
+	if deps then
+		local found = deps:FindFirstChild(name)
+		if found then return found end
+	end
+	return pistol:FindFirstChild(name)
+end
+
 function DuelEffectUtils.setupGun(character, chairSystem, side)
 	local pistolName = side .. "Pistol"
 	local pistol = chairSystem:FindFirstChild(pistolName)
 	if not pistol then return nil end
 
-	local mainPart = pistol:FindFirstChild("Main")
-	local cframeVal = pistol:FindFirstChild("CFrameValue")
+	local mainPart = DuelEffectUtils.getPart(pistol, "Main")
+	local cframeVal = DuelEffectUtils.getPart(pistol, "CFrameValue")
 	if not mainPart or not cframeVal then return nil end
 
 	local rightHand = character:FindFirstChild("RightHand")
