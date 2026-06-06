@@ -33,7 +33,7 @@ local MAX_MATCH_HEALTH = 3
 local BOT_GRACE        = 4   -- seconds alone before a bot fills the chair
 local BOT_THINK_MIN    = 1
 local BOT_THINK_MAX    = 3
-local BOTS_ENABLED     = false   -- set to false to disable bot opponents (PvP still works)
+local BOTS_ENABLED     = false  -- set to false to disable bot opponents (PvP still works)
 
 local Matches = {}
 

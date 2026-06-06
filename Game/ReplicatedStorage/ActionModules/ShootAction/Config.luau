@@ -4,6 +4,17 @@ local Config = {}
 
 -- Animation
 Config.SHOOT_ANIM_ID = "rbxassetid://136695495090944"
+
+-- Per-seat hand + shot animation. Left seat holds the gun in the right
+-- hand (default); the right seat mirrors it into the left hand.
+Config.FIRE_HAND = {
+	Left  = "RightHand",
+	Right = "LeftHand",
+}
+Config.SHOOT_ANIM = {
+	Left  = Config.SHOOT_ANIM_ID,           -- right-hand shot (default)
+	Right = "rbxassetid://87133097009439",  -- left-hand shot
+}
 Config.FIRE_MOMENT   = 0.3   -- fraction through the clip the gun "fires"
 
 -- Bullet movement

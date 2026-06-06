@@ -18,10 +18,15 @@ function MuzzleAim.get(chairSystem, side)
 		axis = -axis
 	end
 
-	-- flatten to horizontal so the slug flies level instead of drooping
+	-- flatten to horizontal, then snap to the nearest world cardinal axis so the
+	-- slug flies dead-straight along one axis regardless of the recoil pose.
 	local flat = Vector3.new(axis.X, 0, axis.Z)
 	if flat.Magnitude > 0.05 then
-		axis = flat.Unit
+		if math.abs(flat.X) >= math.abs(flat.Z) then
+			axis = Vector3.new(flat.X >= 0 and 1 or -1, 0, 0)
+		else
+			axis = Vector3.new(0, 0, flat.Z >= 0 and 1 or -1)
+		end
 	end
 
 	-- Bullet starts from its own anchor if present (decoupled from the flash),

@@ -19,8 +19,10 @@ local Bullet      = require(script:WaitForChild("Bullet"))
 local ShootAction = {}
 
 function ShootAction.perform(character, chairSystem, side, onFireMoment, mode)
-	local gunInfo = DuelEffectUtils.setupGun(character, chairSystem, side)
-	local track = DuelEffectUtils.playAnimation(character, Config.SHOOT_ANIM_ID, "ShootAction", function()
+	local handName = Config.FIRE_HAND[side] or "RightHand"
+	local animId   = Config.SHOOT_ANIM[side] or Config.SHOOT_ANIM_ID
+	local gunInfo = DuelEffectUtils.setupGun(character, chairSystem, side, handName)
+	local track = DuelEffectUtils.playAnimation(character, animId, "ShootAction", function()
 		DuelEffectUtils.teardownGun(gunInfo)
 	end)
 

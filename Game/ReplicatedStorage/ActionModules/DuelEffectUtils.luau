@@ -12,7 +12,7 @@ function DuelEffectUtils.getPart(pistol, name)
 	return pistol:FindFirstChild(name)
 end
 
-function DuelEffectUtils.setupGun(character, chairSystem, side)
+function DuelEffectUtils.setupGun(character, chairSystem, side, handName)
 	local pistolName = side .. "Pistol"
 	local pistol = chairSystem:FindFirstChild(pistolName)
 	if not pistol then return nil end
@@ -21,8 +21,8 @@ function DuelEffectUtils.setupGun(character, chairSystem, side)
 	local cframeVal = DuelEffectUtils.getPart(pistol, "CFrameValue")
 	if not mainPart or not cframeVal then return nil end
 
-	local rightHand = character:FindFirstChild("RightHand")
-	if not rightHand then return nil end
+	local hand = character:FindFirstChild(handName or "RightHand")
+	if not hand then return nil end
 
 	local savedParts = {}
 	for _, part in ipairs(pistol:GetDescendants()) do
@@ -34,10 +34,10 @@ function DuelEffectUtils.setupGun(character, chairSystem, side)
 
 	local motor = Instance.new("Motor6D")
 	motor.Name = "Main"
-	motor.Part0 = rightHand
+	motor.Part0 = hand
 	motor.Part1 = mainPart
 	motor.C0 = cframeVal.Value
-	motor.Parent = rightHand
+	motor.Parent = hand
 
 	return {
 		motor = motor,
