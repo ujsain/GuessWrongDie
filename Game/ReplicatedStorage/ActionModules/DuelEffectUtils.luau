@@ -18,7 +18,7 @@ function DuelEffectUtils.setupGun(character, chairSystem, side, handName)
 	if not pistol then return nil end
 
 	local mainPart = DuelEffectUtils.getPart(pistol, "Main")
-	local cframeVal = DuelEffectUtils.getPart(pistol, "CFrameValue")
+	local cframeVal = DuelEffectUtils.getPart(pistol, "AnimationOffset")
 	if not mainPart or not cframeVal then return nil end
 
 	local hand = character:FindFirstChild(handName or "RightHand")

@@ -3,9 +3,12 @@
 	Owns the physical bot rig. The cloned rig carries an "Animate"
 	script (same one player characters use), so once it's seated it
 	auto-plays the sitting pose.
-	On death the bot uses Roblox's DEFAULT joint break (no ragdoll).
+	On death the bot ragdolls via shared RagdollUtil constraints,
+	matching the player ragdoll behaviour.
 ]]
 local ServerStorage = game:GetService("ServerStorage")
+local Modules = game:GetService("ServerScriptService"):WaitForChild("Modules")
+local RagdollUtil = require(Modules:WaitForChild("RagdollUtil"))
 
 local BotManager = {}
 
@@ -27,8 +30,12 @@ function BotManager.spawnBot(seat, sideName)
 		return nil
 	end
 
-	hum.BreakJointsOnDeath = true  -- default break-apart on death
+	hum.BreakJointsOnDeath = false  -- keep joints intact so we can ragdoll
 	hum.DisplayName = "Dead-Eye Dan"
+
+	-- Remove the default Health regen script so it doesn't interfere
+	local healthScript = bot:FindFirstChild("Health")
+	if healthScript then healthScript:Destroy() end
 
 	bot:PivotTo(seat.CFrame * CFrame.new(0, 2, 0))
 	bot.Parent = workspace
@@ -46,11 +53,13 @@ function BotManager.spawnBot(seat, sideName)
 	return bot
 end
 
--- Kill the bot: default joint break (no ragdoll constraints).
+-- Kill the bot: apply ragdoll constraints + flag clients, then drop health.
 function BotManager.killBot(character)
 	if not character then return end
 	local hum = character:FindFirstChildOfClass("Humanoid")
 	if not hum then return end
+	RagdollUtil.applyConstraints(character)
+	hum:SetAttribute("Ragdolled", true)  -- RagdollClient watches this to ChangeState(Physics)
 	hum.Health = 0
 end
 

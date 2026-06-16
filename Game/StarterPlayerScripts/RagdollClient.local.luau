@@ -1,18 +1,17 @@
 --[[
 	RagdollClient (LocalScript)
-	Watches ALL characters for the "Ragdolled" attribute and
-	applies ChangeState(Physics) on the client so every player
-	sees the ragdoll — not just the owner.
+	Watches ALL characters in the workspace (players AND bots) for the
+	"Ragdolled" attribute and applies ChangeState(Physics) on the client
+	so every player sees the ragdoll -- not just the owner.
 ]]
 
-local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
 
-local function watchCharacter(character)
-	local humanoid = character:FindFirstChildOfClass("Humanoid")
-	if not humanoid then
-		humanoid = character:WaitForChild("Humanoid", 5)
-	end
-	if not humanoid then return end
+local watched = {}
+
+local function watchHumanoid(humanoid)
+	if watched[humanoid] then return end
+	watched[humanoid] = true
 
 	-- If already ragdolled (late join / stream-in), apply immediately
 	if humanoid:GetAttribute("Ragdolled") == true then
@@ -26,16 +25,16 @@ local function watchCharacter(character)
 	end)
 end
 
-local function onPlayerAdded(plr)
-	if plr.Character then
-		task.spawn(watchCharacter, plr.Character)
+-- Catch all humanoids already present
+for _, inst in ipairs(Workspace:GetDescendants()) do
+	if inst:IsA("Humanoid") then
+		watchHumanoid(inst)
 	end
-	plr.CharacterAdded:Connect(function(char)
-		task.spawn(watchCharacter, char)
-	end)
 end
 
-for _, plr in ipairs(Players:GetPlayers()) do
-	onPlayerAdded(plr)
-end
-Players.PlayerAdded:Connect(onPlayerAdded)
+-- Catch humanoids that appear later (player respawns, bot spawns)
+Workspace.DescendantAdded:Connect(function(inst)
+	if inst:IsA("Humanoid") then
+		watchHumanoid(inst)
+	end
+end)

@@ -19,23 +19,27 @@ function DuelUI.new()
 	self.onConfirm = nil
 
 	local pg = player.PlayerGui
-	local gui = pg:WaitForChild("InGame", 10)
+	local gui = pg:WaitForChild("InGameUI", 10)
 	if not gui then return self end
 
 	self.gui = gui
-	self.gui.Enabled = false
+	-- All elements now live under the "InGame" Frame inside the InGameUI ScreenGui
+	local root = gui:WaitForChild("InGame")
+	self.root = root
+	self.gui.Enabled = true   -- keep ScreenGui enabled so sibling LowerButtons can show while waiting
+	self.root.Visible = false  -- combat HUD hidden until a match starts
 
-	self.countdownLabel = gui.CountdownLabel
-	self.timerLabel     = gui.TimerLabel
-	self.resultLabel    = gui.ResultLabel
-	self.bottomBar      = gui.ButtonBar
-	self.confirmBtn     = gui.ConfirmButton
+	self.countdownLabel = root.CountdownLabel
+	self.timerLabel     = root.TimerLabel
+	self.resultLabel    = root.ResultLabel
+	self.bottomBar      = root.ButtonBar
+	self.confirmBtn     = root.ConfirmButton
 
-	self.myStats  = gui.MyStats
-	self.oppStats = gui.OppStats
-	self.myHeartsLabel   = gui.MyStats.HeartsLabel
-	self.myBulletsLabel  = gui.MyStats.BulletsLabel
-	self.oppHeartsLabel  = gui.OppStats.HeartsLabel
+	self.myStats  = root.MyStats
+	self.oppStats = root.OppStats
+	self.myHeartsLabel   = root.MyStats.HeartsLabel
+	self.myBulletsLabel  = root.MyStats.BulletsLabel
+	self.oppHeartsLabel  = root.OppStats.HeartsLabel
 
 	self.choiceButtons = {
 		Shoot   = self.bottomBar.ShootButton,
@@ -105,11 +109,12 @@ end
 
 function DuelUI:show()
 	if self.gui then self.gui.Enabled = true end
+	if self.root then self.root.Visible = true end
 end
 
 function DuelUI:hide()
 	if not self.gui then return end
-	self.gui.Enabled = false
+	if self.root then self.root.Visible = false end
 	self:hideChoices()
 	self.countdownLabel.Text = ""
 	self.resultLabel.Visible = false

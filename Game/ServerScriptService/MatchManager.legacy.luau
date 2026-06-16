@@ -13,6 +13,7 @@ local Modules        = SSS:WaitForChild("Modules")
 local MatchState     = require(Modules:WaitForChild("MatchState"))
 local CombatResolver = require(Modules:WaitForChild("CombatResolver"))
 local SeatManager    = require(Modules:WaitForChild("SeatManager"))
+local GunSelection   = require(Modules:WaitForChild("GunSelection"))
 local BotManager     = require(Modules:WaitForChild("BotManager"))
 local BotBrain       = require(Modules:WaitForChild("BotBrain"))
 local CoinService    = require(SSS.Data:WaitForChild("CoinService"))
@@ -23,6 +24,7 @@ local StartChoicePhase = EventHub.StartChoicePhase
 local SubmitChoice     = EventHub.SubmitChoice
 local RoundResult      = EventHub.RoundResult
 local GameOverRemote   = EventHub.GameOver
+local RequestBot       = EventHub.RequestBot
 
 local MATCH_COUNTDOWN  = 5
 local CHOICE_TIME      = 10
@@ -130,7 +132,9 @@ local function runMatch(tableId)
 
 	local L, R = match.left, match.right
 	local lChar, rChar = sideChar(L), sideChar(R)
-	if not lChar or not rChar then return end
+	if not lChar or not rChar then
+		return
+	end
 
 	local lTok, rTok = sideToken(L), sideToken(R)
 
@@ -283,6 +287,7 @@ local function runMatch(tableId)
 				local dead = (s == L and ld) or (s == R and rd)
 				if dead and not s.isBot and s.player and s.player.Parent then
 					local plr = s.player
+					s.player = nil  -- FIX: dead player leaves their seat; clear stale registration so re-sitting the OTHER chair can't auto-start a phantom PvP match
 					task.spawn(function() plr:LoadCharacter() end)
 				end
 			end
@@ -303,7 +308,8 @@ end
 -------------------------------------------------------
 function tryFillTable(tableId)
 	local match = Matches[tableId]
-	if not match or match.phase ~= "WAITING" then return end
+	if not match then return end
+	if match.phase ~= "WAITING" then return end
 
 	local L, R = match.left, match.right
 	local lHuman = (L.player ~= nil)
@@ -351,6 +357,45 @@ function tryFillTable(tableId)
 end
 
 -------------------------------------------------------
+-- PLAY-WITH-AI (player-triggered bot fill)
+-------------------------------------------------------
+-- Drops a bot into the seat opposite a seated human, on demand.
+-- Bypasses BOTS_ENABLED and the BOT_GRACE timer: this is an explicit request.
+local function spawnBotForMatch(tableId, humanSideName)
+	local match = Matches[tableId]
+	if not match or match.phase ~= "WAITING" then return end
+	if match._botPending then return end
+
+	local humanSide = (humanSideName == "left") and match.left or match.right
+	local emptySide = (humanSideName == "left") and match.right or match.left
+	local emptySeat = (humanSideName == "left") and match.rightSeat or match.leftSeat
+	local emptyName = (humanSideName == "left") and "Right" or "Left"
+
+	if humanSide.player == nil then return end
+	if emptySide.player ~= nil then return end
+	if emptySide.isBot then return end
+
+	match._botPending = true
+	local botChar = BotManager.spawnBot(emptySeat, emptyName)
+	match._botPending = false
+	if not botChar then return end
+
+	emptySide.isBot = true
+	emptySide.botChar = botChar
+	task.spawn(runMatch, tableId)
+end
+
+RequestBot.OnServerEvent:Connect(function(player)
+	for tableId, match in pairs(Matches) do
+		if match.left.player == player then
+			spawnBotForMatch(tableId, "left"); return
+		elseif match.right.player == player then
+			spawnBotForMatch(tableId, "right"); return
+		end
+	end
+end)
+
+-------------------------------------------------------
 -- CHOICE SUBMISSION
 -------------------------------------------------------
 SubmitChoice.OnServerEvent:Connect(function(player, tableId, choice)
@@ -386,6 +431,7 @@ local function setupTable(chairSystem)
 	SeatManager.listen(leftSeat, rightSeat,
 		function(side, player) -- onSit
 			match[side].player = player
+			GunSelection.applyForPlayer(chairSystem, side, player)
 			tryFillTable(tableId)
 		end,
 		function(side, _player) -- onStand
@@ -400,6 +446,7 @@ local function setupTable(chairSystem)
 				end
 			end
 			match[side].player = nil
+			GunSelection.restoreDefault(chairSystem, side)
 			cleanupBots(match)
 			match.phase = "WAITING"
 		end

@@ -21,12 +21,19 @@ local LocalEvents  = script:WaitForChild("LocalEvents")
 --   Client -> server: ("spend", amount, itemId)
 EventHub.CoinRemote = RemoteEvents:WaitForChild("CoinRemote")
 
+
+-- Shop: buy / equip guns + owned-list sync.
+--   Client -> server: ("buy", gunName) / ("equip", gunName) / ("requestState")
+--   Server -> client: ("owned", ownedSet)
+EventHub.ShopRemote = RemoteEvents:WaitForChild("ShopRemote")
 -- Duel / match flow.
 EventHub.StartCountdown   = RemoteEvents:WaitForChild("StartCountdown")    -- server -> client: (tableId, seconds)
 EventHub.StartChoicePhase = RemoteEvents:WaitForChild("StartChoicePhase")  -- server -> client: (tableId, timer)
 EventHub.SubmitChoice     = RemoteEvents:WaitForChild("SubmitChoice")      -- client -> server: (tableId, choice)
 EventHub.RoundResult      = RemoteEvents:WaitForChild("RoundResult")       -- server -> client: (tableId, myChoice, oppChoice, myHP, myBul, oppHP, oppBul)
 EventHub.GameOver         = RemoteEvents:WaitForChild("GameOver")          -- server -> client: (tableId, winnerId, reason)
+
+EventHub.RequestBot       = RemoteEvents:WaitForChild("RequestBot")        -- client -> server: ()  ask to fill the empty seat with a bot
 
 -- === LocalEvents (client-only BindableEvents) ===
 -- These are CLIENT-LOCAL signals fired from the duel effect modules at the

@@ -20,6 +20,7 @@ local StartChoicePhase = EventHub.StartChoicePhase
 local SubmitChoice     = EventHub.SubmitChoice
 local RoundResult      = EventHub.RoundResult
 local GameOverRemote   = EventHub.GameOver
+local RequestBot       = EventHub.RequestBot
 
 local MAX_HP = 3
 
@@ -34,6 +35,51 @@ local myPrevHP = MAX_HP
 local oppPrevHP = MAX_HP
 local choiceTimerThread = nil
 local matchActive = false
+
+-------------------------------------------------------
+-- Lower buttons (Leave / Play With AI)
+-- Visible only while seated and NOT in an active match.
+-------------------------------------------------------
+local playerGui    = player:WaitForChild("PlayerGui")
+local inGameUI     = playerGui:WaitForChild("InGameUI")
+local lowerButtons = inGameUI:WaitForChild("LowerButtons")
+local leaveBtn     = lowerButtons:WaitForChild("Leave")
+local playAIBtn    = lowerButtons:WaitForChild("PlayWithAI")
+lowerButtons.Visible = false
+
+local function isSeated()
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	return hum ~= nil and hum.SeatPart ~= nil
+end
+
+local function showLowerButtons()
+	if matchActive then return end
+	if not isSeated() then return end
+	lowerButtons.Visible = true
+end
+
+local function hideLowerButtons()
+	lowerButtons.Visible = false
+end
+
+-- Play With AI: ask the server to drop a bot into the empty seat.
+local aiDebounce = false
+playAIBtn.MouseButton1Click:Connect(function()
+	if matchActive or not myTableId or not isSeated() then return end
+	if aiDebounce then return end
+	aiDebounce = true
+	RequestBot:FireServer()
+	task.delay(2, function() aiDebounce = false end)
+end)
+
+-- Leave: stand up from the chair (same effect as pressing Space). Waiting only.
+leaveBtn.MouseButton1Click:Connect(function()
+	if matchActive then return end
+	local char = player.Character
+	local hum = char and char:FindFirstChildOfClass("Humanoid")
+	if hum then hum.Sit = false end
+end)
 
 -------------------------------------------------------
 -- Helpers
@@ -89,6 +135,7 @@ local function onSeated(active, seat)
 		myTableId = tableIdVal.Value
 		myBullets = 0
 		matchActive = false
+		lowerButtons.Visible = true
 	elseif not active then
 		myTableId = nil
 		myBullets = 0
@@ -96,6 +143,7 @@ local function onSeated(active, seat)
 		stopTimer()
 		ui:hide()
 		unlockSeat()
+		hideLowerButtons()
 	end
 end
 
@@ -106,6 +154,7 @@ StartCountdown.OnClientEvent:Connect(function(tableId, seconds)
 	if tableId ~= myTableId then return end
 
 	matchActive = true
+	hideLowerButtons()
 	myPrevHP = MAX_HP
 	oppPrevHP = MAX_HP
 	lockSeat()
@@ -221,10 +270,14 @@ GameOverRemote.OnClientEvent:Connect(function(tableId, winnerId, reason)
 		ui:showCountdown("Opponent left! You win!")
 		task.wait(3)
 		ui:hide()
+		if isSeated() and not matchActive then showLowerButtons() end
 	else
 		local isDraw = (winnerId == nil)
 		local won = (winnerId == player.UserId)
 		ui:showGameOver(won, isDraw)
+		task.delay(3.1, function()
+			if isSeated() and not matchActive then showLowerButtons() end
+		end)
 	end
 end)
 
