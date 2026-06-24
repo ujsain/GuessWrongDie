@@ -7,8 +7,8 @@
 	matching the player ragdoll behaviour.
 ]]
 local ServerStorage = game:GetService("ServerStorage")
-local Modules = game:GetService("ServerScriptService"):WaitForChild("Modules")
-local RagdollUtil = require(Modules:WaitForChild("RagdollUtil"))
+-- RagdollUtil is shared with RagdollEffect and lives under it.
+local RagdollUtil = require(game:GetService("ServerScriptService"):WaitForChild("RagdollEffect"):WaitForChild("RagdollUtil"))
 
 local BotManager = {}
 

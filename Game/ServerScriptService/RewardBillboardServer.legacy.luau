@@ -49,8 +49,8 @@ local function setupTable(cs)
 	rightSeat:GetPropertyChangedSignal("Occupant"):Connect(updateVisibility)
 end
 
-for _, cs in ipairs(workspace:GetDescendants()) do
-	if cs.Name == "ChairSystem" and cs:IsA("Folder") then
+for _, cs in ipairs(game:GetService("CollectionService"):GetTagged("ChairSystem")) do
+	if cs:IsA("Folder") and cs:IsDescendantOf(workspace) then
 		setupTable(cs)
 	end
 end

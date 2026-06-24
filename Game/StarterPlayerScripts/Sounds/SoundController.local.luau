@@ -27,8 +27,11 @@ local IDS = {
 	Ricochet        = "107195426020897",  -- bullet hits shield + bounces
 	Hit             = "74863189381790",   -- bullet hits a player
 	Collide         = "103436259617153",  -- two slugs clink mid-air
-	CLOCKTICK       = "135634327556709",                  -- TODO: countdown tick (plays on 5-4-3-2-1)
+	CLOCKTICK       = "78771986232064",                  -- TODO: countdown tick (plays on 5-4-3-2-1)
+	GO              = "136011056790730",                                 -- TODO: "GO!" blast (plays once when the countdown ends)
 	BACKGROUNDMUSIC = "89244151580650",                  -- TODO: looping background music
+	WinSound        = "80792697745051",  -- TODO: match-win stinger  (digits-only rbxassetid)
+	LoseSound       = "83342116842175",  -- TODO: match-lose stinger (digits-only rbxassetid)
 }
 
 -- Per-sound volume (tune to taste).
@@ -40,7 +43,10 @@ local VOL = {
 	Hit             = 0.65,
 	Collide         = 0.55,
 	CLOCKTICK       = 0.5,
-	BACKGROUNDMUSIC = 0.3,   -- keep low so it sits under the SFX
+	GO              = 0.7,   -- a touch louder than the ticks for punch
+	BACKGROUNDMUSIC = 0.5,   -- keep low so it sits under the SFX
+	WinSound        = 1.5,
+	LoseSound       = 1.5,
 }
 
 local ROLLOFF = 80  -- studs; how far each positional (world) sound carries
@@ -122,5 +128,23 @@ EventHub.StartCountdown.OnClientEvent:Connect(function(_tableId, seconds)
 			SoundEffects.Play(IDS.CLOCKTICK, { volume = VOL.CLOCKTICK })
 			task.wait(1)
 		end
+		-- The final wait above lands exactly on the "GO!" beat (DuelClient shows
+		-- it at the same moment), so the blast plays in sync with the text.
+		if myToken ~= countdownToken then return end
+		SoundEffects.Play(IDS.GO, { volume = VOL.GO })
 	end)
+end)
+
+-------------------------------------------------------
+-- MATCH RESULT (win / lose / draw stinger -- THIS player only).
+-- Fired by DuelClient the moment the result screen shows. The GameOver remote
+-- behind it is sent only to the two duelists, and this signal is client-local,
+-- so each player hears only their OWN result. Flat/2D one-shot (it's a UI
+-- stinger, not a world sound). An empty id is skipped silently.
+-------------------------------------------------------
+EventHub.MatchResultEvent.Event:Connect(function(outcome)
+	local id = IDS[outcome .. "Sound"]
+	if id and id ~= "" then
+		SoundEffects.Play(id, { volume = VOL[outcome .. "Sound"] })
+	end
 end)

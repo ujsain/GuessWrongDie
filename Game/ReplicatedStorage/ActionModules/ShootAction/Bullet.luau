@@ -91,6 +91,7 @@ function Bullet.fireStraight(origin, axis, shooterChar, pistol)
 	params.FilterDescendantsInstances = { shooterChar, pistol }
 	params.IgnoreWater = true
 
+	--print(string.format("[BULLET-DBG] fireStraight origin=(%.2f, %.2f, %.2f) axis=(%.3f, %.3f, %.3f)", origin.X, origin.Y, origin.Z, axis.X, axis.Y, axis.Z))
 	local hit = workspace:Raycast(origin, axis * Config.BULLET_MAX_RANGE, params)
 	local endPos = hit and hit.Position or (origin + axis * Config.BULLET_MAX_RANGE)
 	if (endPos - origin).Magnitude < 0.1 then return end

@@ -6,8 +6,11 @@
 ]]
 local MatchState = {}
 
+-- MAX_HEALTH is owned by MatchConfig so there is ONE source of truth on the server.
+local MatchConfig = require(script.Parent:WaitForChild("MatchConfig"))
+
 local CONFIG = {
-	START_HEALTH = 3,
+	START_HEALTH = MatchConfig.MAX_HEALTH,
 }
 
 function MatchState.newPlayerState()

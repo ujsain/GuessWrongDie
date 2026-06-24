@@ -21,7 +21,6 @@ local LocalEvents  = script:WaitForChild("LocalEvents")
 --   Client -> server: ("spend", amount, itemId)
 EventHub.CoinRemote = RemoteEvents:WaitForChild("CoinRemote")
 
-
 -- Shop: buy / equip guns + owned-list sync.
 --   Client -> server: ("buy", gunName) / ("equip", gunName) / ("requestState")
 --   Server -> client: ("owned", ownedSet)
@@ -48,5 +47,11 @@ EventHub.ShieldOpenEvent      = LocalEvents:WaitForChild("ShieldOpenEvent")     
 EventHub.BulletReflectedEvent = LocalEvents:WaitForChild("BulletReflectedEvent")  -- (position)                    - a bullet hit a shield and bounced
 EventHub.BulletHitEvent       = LocalEvents:WaitForChild("BulletHitEvent")        -- (position)                    - a bullet hit a player
 EventHub.BulletsCollideEvent  = LocalEvents:WaitForChild("BulletsCollideEvent")   -- (position)                    - two bullets met mid-air
+
+-- Match result (Win / Lose / Draw) for the LOCAL player only. Fired by
+-- DuelClient the instant the result screen shows. It's client-local and the
+-- GameOver remote behind it is sent only to the two duelists, so each player
+-- only ever reacts to their OWN outcome.
+EventHub.MatchResultEvent     = LocalEvents:WaitForChild("MatchResultEvent")      -- (outcome: "Win" | "Lose" | "Draw")
 
 return EventHub

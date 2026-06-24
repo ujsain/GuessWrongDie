@@ -1,6 +1,5 @@
 local Players = game:GetService("Players")
-local Modules = game:GetService("ServerScriptService"):WaitForChild("Modules")
-local RagdollUtil = require(Modules:WaitForChild("RagdollUtil"))
+local RagdollUtil = require(script:WaitForChild("RagdollUtil"))
 
 local function ragdoll(character)
 	local humanoid = character:FindFirstChildOfClass("Humanoid")

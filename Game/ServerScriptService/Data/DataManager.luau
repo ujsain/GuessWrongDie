@@ -42,6 +42,7 @@ local PlayerStore = ProfileStore.New(GetStoreName(), Template)
 --- Push saved fields onto the Player as attributes so clients can read them.
 local function PushAttributes(player: Player, data)
 	player:SetAttribute("Coins", data.Coins)
+	player:SetAttribute("MatchesWon", data.MatchesWon)
 end
 
 --------------------------------------------------------------------------------

@@ -13,6 +13,7 @@ function MuzzleAim.get(chairSystem, side)
 	if not muzzleTip then return nil end
 
 	local axis = muzzleTip.CFrame.ZVector
+	local rawAxis = axis
 	local mainPart = DuelEffectUtils.getPart(pistol, "Main")
 	if mainPart and (muzzleTip.Position - mainPart.Position):Dot(axis) < 0 then
 		axis = -axis
@@ -21,13 +22,16 @@ function MuzzleAim.get(chairSystem, side)
 	-- flatten to horizontal, then snap to the nearest world cardinal axis so the
 	-- slug flies dead-straight along one axis regardless of the recoil pose.
 	local flat = Vector3.new(axis.X, 0, axis.Z)
+	local snapped = false
 	if flat.Magnitude > 0.05 then
+		snapped = true
 		if math.abs(flat.X) >= math.abs(flat.Z) then
 			axis = Vector3.new(flat.X >= 0 and 1 or -1, 0, 0)
 		else
 			axis = Vector3.new(0, 0, flat.Z >= 0 and 1 or -1)
 		end
 	end
+	print(string.format("[MUZZLE-DBG] side=%s rawZ=(%.3f, %.3f, %.3f) flatMag=%.4f snapped=%s finalAxis=(%.2f, %.2f, %.2f)", tostring(side), rawAxis.X, rawAxis.Y, rawAxis.Z, flat.Magnitude, tostring(snapped), axis.X, axis.Y, axis.Z))
 
 	-- Bullet starts from its own anchor if present (decoupled from the flash),
 	-- otherwise falls back to the muzzle tip.

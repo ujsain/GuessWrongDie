@@ -7,7 +7,7 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local DataManager = require(ServerScriptService.Data.DataManager)
 local CoinService = require(ServerScriptService.Data.CoinService)
-
+--[[
 -- ProfileReady only passes (player) — profile is NOT passed through
 -- BindableEvents due to cyclic table serialisation errors.
 DataManager.ProfileReady:Connect(function(player)

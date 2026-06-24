@@ -8,4 +8,8 @@
 return {
 	-- Currency
 	Coins = 0,
+
+	-- Lifetime stats (mirrored to the "MatchesWon" attribute
+	-- for clients, and to the global wins OrderedDataStore)
+	MatchesWon = 0,
 }

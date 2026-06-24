@@ -22,7 +22,7 @@ local ReplicatedStorage   = game:GetService("ReplicatedStorage")
 
 local DataManager  = require(ServerScriptService.Data.DataManager)
 local CoinService  = require(ServerScriptService.Data.CoinService)
-local GunSelection = require(ServerScriptService.Modules.GunSelection)
+local GunSelection = require(ServerScriptService.Data.GunSelection)
 local EventHub     = require(ReplicatedStorage:WaitForChild("EventHub"))
 
 local PISTOLS = ReplicatedStorage:WaitForChild("Pistols")

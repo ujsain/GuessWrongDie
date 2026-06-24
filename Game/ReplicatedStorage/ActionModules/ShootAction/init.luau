@@ -64,11 +64,14 @@ function ShootAction.perform(character, chairSystem, side, onFireMoment, mode)
 		end
 		if track.Length > 0 then
 			local animDelay = (track.Length * Config.FIRE_MOMENT) / track.Speed
+--			print(string.format("[SHOOT-DBG] branch=DELAYED side=%s len=%.3f speed=%.3f animDelay=%.3f", tostring(side), track.Length, track.Speed, animDelay))
 			task.delay(animDelay, fireNow)
 		else
+		--	print(string.format("[SHOOT-DBG] branch=IMMEDIATE side=%s len=0 isPlaying=%s (gun likely NOT posed yet)", tostring(side), tostring(track.IsPlaying)))
 			fireNow()
 		end
 	else
+		--print(string.format("[SHOOT-DBG] branch=NO_TRACK side=%s", tostring(side)))
 		fireNow()
 	end
 end

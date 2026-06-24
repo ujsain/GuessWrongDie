@@ -16,8 +16,8 @@ local GameOver          = EventHub.GameOver
 
 -- Find the world center of the table for a given TableId.
 local function tableCenter(tableId)
-	for _, cs in ipairs(workspace:GetDescendants()) do
-		if cs.Name == "ChairSystem" and cs:IsA("Folder") then
+	for _, cs in ipairs(game:GetService("CollectionService"):GetTagged("ChairSystem")) do
+		if cs:IsA("Folder") and cs:IsDescendantOf(workspace) then
 			local tid = cs:FindFirstChild("TableId")
 			if tid and tid.Value == tableId then
 				local tbl = cs:FindFirstChild("table")

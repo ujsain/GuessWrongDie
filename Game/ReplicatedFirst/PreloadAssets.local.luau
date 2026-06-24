@@ -50,6 +50,7 @@ task.spawn(function()
 		"rbxassetid://136695495090944",  -- Shoot
 		"rbxassetid://102623437731139",  -- Reload
 		"rbxassetid://117607954022155",  -- Deflect
+		"rbxassetid://87133097009439",  -- left-hand shot
 	}
 	for _, id in ipairs(animationIds) do
 		local anim = Instance.new("Animation")
