@@ -21,7 +21,7 @@ local Players             = game:GetService("Players")
 local ServerScriptService = game:GetService("ServerScriptService")
 local Workspace           = game:GetService("Workspace")
 
-local DataManager    = require(ServerScriptService.Data.DataManager)
+local DataManager    = require(ServerScriptService.Data:FindFirstChild("DataManager", true))
 local WinsBoardStore = require(ServerScriptService.Analytics.WinsBoardStore)
 
 local TOP_N            = 10

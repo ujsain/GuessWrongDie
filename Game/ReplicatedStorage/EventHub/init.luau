@@ -25,6 +25,11 @@ EventHub.CoinRemote = RemoteEvents:WaitForChild("CoinRemote")
 --   Client -> server: ("buy", gunName) / ("equip", gunName) / ("requestState")
 --   Server -> client: ("owned", ownedSet)
 EventHub.ShopRemote = RemoteEvents:WaitForChild("ShopRemote")
+
+-- Shields: buy / equip deflect shields + owned-list sync (mirrors ShopRemote).
+--   Client -> server: ("buy", name) / ("equip", name) / ("requestState")
+--   Server -> client: ("owned", ownedSet) / ("buyFailed", name)
+EventHub.ShieldRemote = RemoteEvents:WaitForChild("ShieldRemote")
 -- Duel / match flow.
 EventHub.StartCountdown   = RemoteEvents:WaitForChild("StartCountdown")    -- server -> client: (tableId, seconds)
 EventHub.StartChoicePhase = RemoteEvents:WaitForChild("StartChoicePhase")  -- server -> client: (tableId, timer)

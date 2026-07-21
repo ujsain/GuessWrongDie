@@ -3,11 +3,11 @@
 -- NOTE: No wait() at the top — must connect BEFORE DataManager.Init() fires
 -- ProfileReady or the event is missed entirely.
 
---
-local ServerScriptService = game:GetService("ServerScriptService")
-local DataManager = require(ServerScriptService.Data.DataManager)
-local CoinService = require(ServerScriptService.Data.CoinService)
 --[[
+local ServerScriptService = game:GetService("ServerScriptService")
+local DataManager = require(ServerScriptService.Data:FindFirstChild("DataManager", true))
+local CoinService = require(ServerScriptService.Data:FindFirstChild("CoinService", true))
+--
 -- ProfileReady only passes (player) — profile is NOT passed through
 -- BindableEvents due to cyclic table serialisation errors.
 DataManager.ProfileReady:Connect(function(player)

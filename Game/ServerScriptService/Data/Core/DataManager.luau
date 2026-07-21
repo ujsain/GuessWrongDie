@@ -13,7 +13,7 @@ local RunService          = game:GetService("RunService")
 local ServerScriptService = game:GetService("ServerScriptService")
 
 local ProfileStore = require(ServerScriptService.Libraries.ProfileStore)
-local Template     = require(ServerScriptService.Data.Template)
+local Template     = require(ServerScriptService.Data:FindFirstChild("Template", true))
 
 local DataManager = {}
 

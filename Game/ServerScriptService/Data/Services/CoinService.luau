@@ -5,7 +5,7 @@
 	and the server end of CoinRemote (client spend requests).
 
 	Earn / spend from any server script:
-	    local CoinService = require(ServerScriptService.Data.CoinService)
+	    local CoinService = require(ServerScriptService.Data:FindFirstChild("CoinService", true))
 	    CoinService.Add(player, 50, "Reward")
 	    CoinService.Spend(player, 50, "ShopItem")
 	    CoinService.GetBalance(player)
@@ -14,7 +14,7 @@
 local ServerScriptService = game:GetService("ServerScriptService")
 local ReplicatedStorage   = game:GetService("ReplicatedStorage")
 
-local DataManager = require(ServerScriptService.Data.DataManager)
+local DataManager = require(ServerScriptService.Data:FindFirstChild("DataManager", true))
 local EventHub    = require(ReplicatedStorage:WaitForChild("EventHub"))
 
 local CoinService = {}

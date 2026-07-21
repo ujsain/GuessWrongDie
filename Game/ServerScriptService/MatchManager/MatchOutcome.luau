@@ -7,7 +7,7 @@
 
 local SSS     = game:GetService("ServerScriptService")
 local MatchConfig        = require(script.Parent:WaitForChild("MatchConfig"))   -- sibling (match subsystem)
-local CoinService        = require(SSS:WaitForChild("Data"):WaitForChild("CoinService"))
+local CoinService        = require(SSS:WaitForChild("Data"):FindFirstChild("CoinService", true))
 local MatchTracker       = require(SSS:WaitForChild("Analytics"):WaitForChild("MatchTracker"))
 local LeaderboardService = require(SSS:WaitForChild("LeaderboardService"))
 

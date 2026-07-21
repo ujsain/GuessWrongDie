@@ -22,7 +22,7 @@ local MatchRunner      = require(script:WaitForChild("MatchRunner"))
 local CombatResolver   = require(script:WaitForChild("CombatResolver"))
 local SeatManager      = require(script:WaitForChild("SeatManager"))
 -- gun-equip service lives with the gun economy in Data
-local GunSelection     = require(SSS:WaitForChild("Data"):WaitForChild("GunSelection"))
+local GunSelection     = require(SSS:WaitForChild("Data"):FindFirstChild("GunSelection", true))
 
 local EventHub     = require(RS:WaitForChild("EventHub"))
 local SubmitChoice = EventHub.SubmitChoice

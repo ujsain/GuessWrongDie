@@ -12,4 +12,8 @@ return {
 	-- Lifetime stats (mirrored to the "MatchesWon" attribute
 	-- for clients, and to the global wins OrderedDataStore)
 	MatchesWon = 0,
+
+	-- Robux developer-product idempotency: PurchaseIds already granted
+	-- (capped FIFO list; see Data.Services.PurchaseService)
+	PurchaseIdCache = {},
 }
